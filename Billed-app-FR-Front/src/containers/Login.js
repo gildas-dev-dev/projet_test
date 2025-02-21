@@ -17,33 +17,39 @@ export default class Login {
     const formEmployee = this.document.querySelector(
       `form[data-testid="form-employee"]`
     );
-    formEmployee.addEventListener("submit", this.handleSubmitEmployee);
+    formEmployee.addEventListener("submit", this.handleSubmitEmployee
+
+    );
     const formAdmin = this.document.querySelector(
       `form[data-testid="form-admin"]`
     );
     formAdmin.addEventListener("submit", this.handleSubmitAdmin);
+    ;
   }
-  handleSubmitEmployee = (e) => {
-    e.preventDefault();
+  handleSubmitEmployee = e => {
+    e.preventDefault()
     const user = {
       type: "Employee",
-      email: e.target.querySelector(`input[data-testid="employee-email-input"]`)
-        .value,
-      password: e.target.querySelector(
-        `input[data-testid="employee-password-input"]`
-      ).value,
-      status: "connected",
-    };
-    this.localStorage.setItem("user", JSON.stringify(user));
+      email: e.target.querySelector(`input[data-testid="employee-email-input"]`).value,
+      password: e.target.querySelector(`input[data-testid="employee-password-input"]`).value,
+      status: "connected"
+    }
+    if (user.email != "admin@test.tld" && user.email != "employee@test.tld") {
+      alert("Veillez entrer les paramètres de conncetions valides")
+      return
+    }
+    this.localStorage.setItem("user", JSON.stringify(user))
     this.login(user)
- 
+      .catch(
+        (err) => this.createUser(user)
+      )
       .then(() => {
-        this.onNavigate(ROUTES_PATH["Bills"]);
-        this.PREVIOUS_LOCATION = ROUTES_PATH["Bills"];
-        PREVIOUS_LOCATION = this.PREVIOUS_LOCATION;
-        this.document.body.style.backgroundColor = "#fff";
-      });
-  };
+        this.onNavigate(ROUTES_PATH['Bills'])
+        this.PREVIOUS_LOCATION = ROUTES_PATH['Bills']
+        PREVIOUS_LOCATION = this.PREVIOUS_LOCATION
+        this.document.body.style.backgroundColor = "#fff"
+      })
+  }
 
   handleSubmitAdmin = (e) => {
     e.preventDefault();
@@ -56,17 +62,26 @@ export default class Login {
       ).value,
       status: "connected",
     };
-    this.localStorage.setItem("user", JSON.stringify(user));
-    this.login(user)    
-      .then(() => {
-        this.onNavigate(ROUTES_PATH["Dashboard"]);
-        this.PREVIOUS_LOCATION = ROUTES_PATH["Dashboard"];
-        PREVIOUS_LOCATION = this.PREVIOUS_LOCATION;
-        document.body.style.backgroundColor = "#fff";
-      }); 
+    if (user.password != "admin") {
+      alert("rwon user");
+      return
+    } else if(user.email !="admin@test.tld") {
+      alert("paramètres de connections incorrectes")
+      return
+    }
+    else {
+      this.localStorage.setItem("user", JSON.stringify(user));
+      this.login(user)
+        .then(() => {
+          this.onNavigate(ROUTES_PATH["Dashboard"]);
+          this.PREVIOUS_LOCATION = ROUTES_PATH["Dashboard"];
+          PREVIOUS_LOCATION = this.PREVIOUS_LOCATION;
+          document.body.style.backgroundColor = "#fff";
+        });
+    }
   };
-  
-  login = (user) => {    
+
+  login = (user) => {
     if (this.store) {
       return this.store
         .login(
@@ -78,12 +93,12 @@ export default class Login {
         .then(({ jwt }) => {
           localStorage.setItem("jwt", jwt);
         });
-    } else {   
+    } else {
       return null;
     }
   };
   // cette fonction est à tester
-  createUser = (user) => {    
+  createUser = (user) => {
     if (this.store) {
       return this.store
         .users()
@@ -99,8 +114,10 @@ export default class Login {
           console.log(`User with ${user.email} is created`);
           return this.login(user);
         });
-    } else {   
+    } else {
       return null;
     }
   };
 }
+
+
